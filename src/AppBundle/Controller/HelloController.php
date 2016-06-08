@@ -7,8 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class HelloController
 {
-    public function helloAction(Request $request)
+    public function helloAction(Request $request, $name)
     {
-        return new Response('This is My first controller');
+        return new Response('This is My first controller hello '.$name);
     }
 }
