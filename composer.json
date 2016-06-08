@@ -1,0 +1,12 @@
+{
+    "name": "ram/framework",
+    "require": {
+        "symfony/http-foundation": "^3.1"
+    },
+    "authors": [
+        {
+            "name": "Ramtane",
+            "email": "rhidja@gmail.com"
+        }
+    ]
+}
