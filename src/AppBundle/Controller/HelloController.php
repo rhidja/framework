@@ -3,10 +3,11 @@
 namespace AppBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class HelloController
 {
-    public function indexAction($request)
+    public function helloAction(Request $request)
     {
         return new Response('This is My first controller');
     }
