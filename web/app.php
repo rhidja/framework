@@ -4,17 +4,20 @@
 require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Controller;
 use Symfony\Component\Routing;
-use Symfony\Component\HttpKernel;
+use App\Framework;
 
 $request = Request::createFromGlobals();
-$routes = include __DIR__.'/../app/routes.php';
+$routes = include __DIR__ . '/../config/routes.php';
 
 $context = new Routing\RequestContext();
 $matcher = new Routing\Matcher\UrlMatcher($routes, $context);
-$resolver = new HttpKernel\Controller\ControllerResolver();
 
-$framework = new Framework($matcher, $resolver);
+$controllerResolver = new Controller\ControllerResolver();
+$argumentResolver = new Controller\ArgumentResolver();
+
+$framework = new Framework($matcher, $controllerResolver, $argumentResolver);
 $response = $framework->handle($request);
 
 $response->send();

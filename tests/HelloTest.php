@@ -1,9 +1,8 @@
 <?php
 
-use AppBundle\Controller\HelloController;
-use Symfony\Component\HttpFoundation\Request;
+use PHPUnit\Framework\TestCase;
 
-class HelloTest extends \PHPUnit_Framework_TestCase
+class HelloTest extends TestCase
 {
     public function testHello()
     {

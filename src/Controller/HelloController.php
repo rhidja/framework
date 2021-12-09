@@ -1,9 +1,10 @@
 <?php
-// src/AppBundle/Controller/HelloController.php
-namespace AppBundle\Controller;
+declare(strict_types=1);
 
-use Symfony\Component\HttpFoundation\Response;
+namespace App\Controller;
+
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class HelloController
 {

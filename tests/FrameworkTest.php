@@ -1,11 +1,15 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
+use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
+use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use App\Framework;
 
-class FrameworkTest extends \PHPUnit_Framework_TestCase
+class FrameworkTest extends TestCase
 {
     public function testNotFoundHandling()
     {
@@ -18,7 +22,10 @@ class FrameworkTest extends \PHPUnit_Framework_TestCase
 
     private function getFrameworkForException($exception)
     {
-        $matcher = $this->getMock('Symfony\Component\Routing\Matcher\UrlMatcherInterface');
+        $matcher = $this->createMock(UrlMatcherInterface::class);
+        // use getMock() on PHPUnit 5.3 or below
+        // $matcher = $this->getMock(UrlMatcherInterface::class);
+
         $matcher
             ->expects($this->once())
             ->method('match')
@@ -27,49 +34,11 @@ class FrameworkTest extends \PHPUnit_Framework_TestCase
         $matcher
             ->expects($this->once())
             ->method('getContext')
-            ->will($this->returnValue($this->getMock('Symfony\Component\Routing\RequestContext')))
+            ->will($this->returnValue($this->createMock(RequestContext::class)))
         ;
-        $resolver = $this->getMock('Symfony\Component\HttpKernel\Controller\ControllerResolverInterface');
+        $controllerResolver = $this->createMock(ControllerResolverInterface::class);
+        $argumentResolver = $this->createMock(ArgumentResolverInterface::class);
 
-        return new Framework($matcher, $resolver);
+        return new Framework($matcher, $controllerResolver, $argumentResolver);
     }
-
-    public function testErrorHandling()
-    {
-        $framework = $this->getFrameworkForException(new \RuntimeException());
-
-        $response = $framework->handle(new Request());
-
-        $this->assertEquals(500, $response->getStatusCode());
-    }
-
-    public function testControllerResponse()
-    {
-        $matcher = $this->getMock('Symfony\Component\Routing\Matcher\UrlMatcherInterface');
-        $matcher
-            ->expects($this->once())
-            ->method('match')
-            ->will($this->returnValue(array(
-                '_route' => 'foo',
-                'name' => 'Fabien',
-                '_controller' => function ($name) {
-                    return new Response('Hello '.$name);
-                }
-            )))
-        ;
-        $matcher
-            ->expects($this->once())
-            ->method('getContext')
-            ->will($this->returnValue($this->getMock('Symfony\Component\Routing\RequestContext')))
-        ;
-        $resolver = new ControllerResolver();
-
-        $framework = new Framework($matcher, $resolver);
-
-        $response = $framework->handle(new Request());
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertContains('Hello Fabien', $response->getContent());
-    }
-
 }
