@@ -3,15 +3,17 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use App\Framework;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use App\Container;
+
+$routes = include __DIR__.'/../config/routes.php';
 
 $request = Request::createFromGlobals();
-$requestStack = new RequestStack();
-$routes = include __DIR__ . '/../config/routes.php';
 
-$framework = new Framework($routes);
-$response = $framework->handle($request);
+$container = Container::register($routes);
+$container->setParameter('debug', true);
+$container->setParameter('charset', 'UTF-8');
+
+$response = $container->get('framework')->handle($request);
 
 $response->send();
