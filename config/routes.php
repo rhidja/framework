@@ -6,7 +6,7 @@ $routes = new Routing\RouteCollection();
 
 $routes->add('hello', new Routing\Route('/hello/{name}', array(
     'name' => 'World',
-    '_controller' => 'App\HelloController::helloAction',
+    '_controller' => 'App\Controller\HelloController::helloAction',
 )));
 
 return $routes;
