@@ -1,6 +1,9 @@
 <?php
 
+use App\EventListener\ContentLengthListener;
+use App\EventListener\GoogleListener;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
@@ -39,6 +42,10 @@ class FrameworkTest extends TestCase
         $controllerResolver = $this->createMock(ControllerResolverInterface::class);
         $argumentResolver = $this->createMock(ArgumentResolverInterface::class);
 
-        return new Framework($matcher, $controllerResolver, $argumentResolver);
+        $eventDispatcher = new EventDispatcher();
+        $eventDispatcher->addSubscriber(new ContentLengthListener());
+        $eventDispatcher->addSubscriber(new GoogleListener());
+
+        return new Framework($eventDispatcher, $matcher, $controllerResolver, $argumentResolver);
     }
 }

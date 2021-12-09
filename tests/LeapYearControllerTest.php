@@ -1,5 +1,6 @@
 <?php
 
+use App\Controller\LeapYearController;
 use App\EventListener\ContentLengthListener;
 use App\EventListener\GoogleListener;
 use PHPUnit\Framework\TestCase;
@@ -9,9 +10,8 @@ use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
-use App\Controller\HelloController;
 
-class HelloControllerTest extends TestCase
+class LeapYearControllerTest extends TestCase
 {
     public function testControllerResponse()
     {
@@ -23,9 +23,9 @@ class HelloControllerTest extends TestCase
             ->expects($this->once())
             ->method('match')
             ->will($this->returnValue([
-                '_route' => 'hello/{name}',
-                'name' => 'Ramtane',
-                '_controller' => [new HelloController(), 'helloAction'],
+                '_route' => 'is_leap_year/{year}',
+                'year' => '2000',
+                '_controller' => [new LeapYearController(), 'index'],
             ]))
         ;
         $matcher
@@ -44,6 +44,6 @@ class HelloControllerTest extends TestCase
         $response = $framework->handle(new Request());
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertStringContainsString('Hello, this is my first test, Ramtane', $response->getContent());
+        $this->assertStringContainsString('Yep, this is a leap year!GA CODE', $response->getContent());
     }
 }
