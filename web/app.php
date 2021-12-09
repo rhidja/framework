@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Controller;
 use App\EventListener\ContentLengthListener;
 use App\EventListener\GoogleListener;
 use Symfony\Component\Routing;
+use Symfony\Component\HttpKernel;
 
 $request = Request::createFromGlobals();
 $routes = include __DIR__ . '/../config/routes.php';
@@ -25,6 +26,13 @@ $controllerResolver = new Controller\ControllerResolver();
 $argumentResolver = new Controller\ArgumentResolver();
 
 $framework = new Framework($eventDispatcher, $matcher, $controllerResolver, $argumentResolver);
+$framework = new HttpKernel\HttpCache\HttpCache(
+    $framework,
+    new HttpKernel\HttpCache\Store(__DIR__.'/../cache'),
+    new HttpKernel\HttpCache\Esi(),
+    ['debug' => true]
+);
+
 $response = $framework->handle($request);
 
 $response->send();
