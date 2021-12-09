@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+use App\EventListener\StringResponseListener;
 use App\Framework;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,15 +25,13 @@ $controllerResolver = new Controller\ControllerResolver();
 $argumentResolver = new Controller\ArgumentResolver();
 
 $eventDispatcher = new EventDispatcher();
+$eventDispatcher->addSubscriber(new HttpKernel\EventListener\ErrorListener(
+    'App\Controller\ErrorController::exception'
+));
 $eventDispatcher->addSubscriber(new ContentLengthListener());
 $eventDispatcher->addSubscriber(new GoogleListener());
+$eventDispatcher->addSubscriber(new StringResponseListener());
 $eventDispatcher->addSubscriber(new HttpKernel\EventListener\RouterListener($matcher, $requestStack));
-
-$errorListener = new HttpKernel\EventListener\ErrorListener(
-    'App\Controller\ErrorController::exception'
-);
-
-$eventDispatcher->addSubscriber($errorListener);
 $eventDispatcher->addSubscriber(new HttpKernel\EventListener\ResponseListener('UTF-8'));
 
 $framework = new Framework($eventDispatcher, $controllerResolver, $requestStack, $argumentResolver);
