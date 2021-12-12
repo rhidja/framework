@@ -1,0 +1,50 @@
+parameters:
+    charset: 'UTF-8'
+
+services:
+
+    context:
+        class: Symfony\Component\Routing\RequestContext
+
+    #matcher:
+    #    class: Symfony\Component\Routing\Matcher\UrlMatcher
+    #    arguments:
+    #        - '@context'
+
+    request_stack:
+        class: Symfony\Component\HttpFoundation\RequestStack
+
+    controller_resolver:
+        class: Symfony\Component\HttpKernel\Controller\ControllerResolver
+
+    argument_resolver:
+        class: Symfony\Component\HttpKernel\Controller\ArgumentResolver
+
+    listener.router:
+        class: Symfony\Component\HttpKernel\EventListener\RouterListener
+        arguments:
+            - '@matcher'
+            - '@request_stack'
+
+    listener.response:
+        class: Symfony\Component\HttpKernel\EventListener\ResponseListener
+        arguments:
+            - '%charset%'
+
+    listener.exception:
+        class: Symfony\Component\HttpKernel\EventListener\ErrorListener
+        arguments:
+            - 'App\Controller\ErrorController::exception'
+
+    dispatcher:
+        class: Symfony\Component\EventDispatcher\EventDispatcher
+        calls:
+            - addSubscriber: ['@listener.router', '@listener.response', '@listener.exception']
+
+    framework:
+        class: App\Framework
+        arguments:
+            - '@dispatcher'
+            - '@controller_resolver'
+            - '@request_stack'
+            - '@argument_resolver'
